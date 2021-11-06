@@ -1,65 +1,47 @@
-import React from 'react';
-import ProductCard from '../components/ProductCard';
-import InfoUser from '../components/InfoUser';
-import '../style/checkout.css';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import ProductsReview from '../components/ProductsReview';
+import BuyerReview from '../components/BuyerReview';
+import PaymentMethod from '../components/PaymentMethod';
 
-class Checkout extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      isLoading: true,
-      itens: [],
-      totalPrice: 0.00,
-    };
-  }
-
-  componentDidMount() {
-    this.pegarCarrinho();
-  }
-
-  pegarCarrinho = async () => {
-    const itens = await JSON.parse(localStorage.getItem('cartItems'));
-    let totalPrice = 0.00;
-    itens.forEach(({ price, quantity }) => {
-      totalPrice += price * quantity;
-    });
-    this.setState({ itens, isLoading: false, totalPrice });
-  }
-
-  renderItens() {
-    const { itens, totalPrice } = this.state;
-    return (
-      <div className="container my-3">
-        <h1 className="h2 py-2">Revise seus produtos</h1>
-        <div className="row border border-secondary rounded container-border">
-          {itens.map((item) => (
-            <div
-              key={ item.id }
-              className="rounded product-border product-card bg-light"
-            >
-              <ProductCard product={ item } />
-              <h4 className="h5">{`Quantidade: ${item.quantity}`}</h4>
-            </div>
-          ))}
-        </div>
-        <hr />
-        <h3 className="py-3">{`Total: R$ ${totalPrice.toFixed(2)}`}</h3>
-        <hr />
-      </div>
-    );
-  }
-
+class Checkout extends Component {
   render() {
-    const { isLoading } = this.state;
+    // Recebe a props cart vinda do App.js com as informações atuais do carrinho
+    const { cart } = this.props;
+
     return (
-      <div className="container">
-        <div>
-          { isLoading ? null : this.renderItens() }
+      <div className="screen-checkout">
+        {/* Chama o componente de Revisão do carrinho */}
+        <ProductsReview cart={ cart } />
+        {/* Salta um espaçamento entre os componentes */}
+        <br />
+        {/* Chama o componente de Revisão do comprador */}
+        <BuyerReview />
+        {/* Salta um espaçamento entre os componentes */}
+        <br />
+        {/* Chama o componente de método de pagamento */}
+        <PaymentMethod />
+
+        {/* Salta um espaçamento entre os componentes */}
+        <br />
+        {/* Criando link para finalização da compra */}
+        <div className="btn-div-finish">
+          <Link
+            to="/"
+            onClick={ this.emptyCart }
+            className="btn btn-center btn-finish"
+          >
+            Finalizar
+          </Link>
         </div>
-        <InfoUser />
+        <br />
       </div>
     );
   }
 }
 
+Checkout.propTypes = {
+  cart: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
 export default Checkout;

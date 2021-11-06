@@ -1,43 +1,66 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import FreeShipping from './FreeShipping';
-import '../style/productCard.css';
+import { Link } from 'react-router-dom';
 
-class ProductCard extends React.Component {
+class ProductCard extends Component {
   render() {
-    const { product: {
-      thumbnail,
-      title,
-      price,
-      shipping: { free_shipping: freeShipping } } } = this.props;
+    // Recebe a props produto do componente ListProducts e desconstrói o id, title, thumbail
+    // Pegamos tambem informação de shipping/frete e available quantity
+    const {
+      produto: { id, title, thumbnail, price,
+        // Desestruturo o shipping da API que tem a função de informar se o frete é gratuito
+        shipping: { free_shipping: freeShipping },
+        // Desestruturo o available_quantity que informa se o produto ainda está disponível
+        available_quantity: available,
+      },
+    } = this.props;
+
+    const { produto } = this.props;
+    const categoryId = produto.category_id;
+    // Recebe a função setCart que está no App.js como props
+    const { setCart } = this.props;
+
+    // Se o tamanho do id for menor que 1 já retorna que não foi encontrado nenhum produto
+    if (id.length < 1) return 'Nenhum produto encontrado';
+
     return (
-      <div data-testid="product" className="row justify-content-between">
-        <div className="col-3 py-2">
-          <img
-            src={ thumbnail }
-            alt="imagem do produto"
-            className="product-img"
-          />
-        </div>
-        <div className="col-8 py-2 overflow-hidden">
-          <h1 className="h6" data-testid="shopping-cart-product-name">{ title }</h1>
-          <h2 className="h5">{`R$  ${price.toFixed(2)}`}</h2>
-          { freeShipping ? <FreeShipping /> : null }
-        </div>
+      <div className="card-container">
+        <Link
+          key={ `${id} - ${title}` }
+          // Faz o link to do produto com sua categoria e id
+          to={ `/product/${categoryId}/${id}` }
+          data-testid="product-detail-link"
+        >
+          <div data-testid="product" className="product-card">
+            <p className="product-title">{ title }</p>
+            <img src={ thumbnail } alt="{ title }" />
+            {/* Adiciona no card a informação do Frete Gratis quando houver */}
+            {freeShipping && (
+              <p data-testid="free-shipping">
+                Frete grátis
+              </p>
+            )}
+            {/* Informa o preço do produto */}
+            <p className="product-price">{` R$ ${price}`}</p>
+          </div>
+        </Link>
+        <button
+          // O evento click abaixo chama a função setCard que vai ...
+          // ...adicionar o item no state do ListProducs e no localStorage.
+          onClick={ () => setCart({ id, title, price, quant: 1, thumbnail, available }) }
+          type="button"
+          data-testid="product-add-to-cart"
+        >
+          Adicionar ao Carrinho
+        </button>
       </div>
     );
   }
 }
 
 ProductCard.propTypes = {
-  product: PropTypes.shape({
-    thumbnail: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    shipping: PropTypes.shape({
-      free_shipping: PropTypes.bool.isRequired,
-    }).isRequired,
-  }).isRequired,
-};
+  title: PropTypes.string,
+  id: PropTypes.string,
+}.isRequired;
 
 export default ProductCard;

@@ -1,61 +1,56 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import Context from '../Context';
-import CartButton from './CartButton';
-import logo from '../img/react-logo.png';
+import PropTypes from 'prop-types';
 
-class Header extends React.Component {
-  constructor() {
-    super();
-    this.renderLinks = this.renderLinks.bind(this);
-  }
-
-  renderLinks(cartLength) {
-    return (
-      <div className="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-          <li className="nav-item">
-            <Link className="nav-link active" to="/">Home</Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link active" to="/about">Sobre</Link>
-          </li>
-        </ul>
-        <CartButton>{cartLength}</CartButton>
-      </div>
-    );
-  }
-
+class Header extends Component {
   render() {
+    // Recebo a props cartItems que tem as informações dos produtos que estão no carrinho
+    const { cartItems } = this.props;
+
+    // Faz um reduce para pegar a quantidade de itens no carrinho
+    const totalItems = cartItems.reduce((acc, curr) => acc + curr.quant, 0);
+
     return (
-      <Context.Consumer>
-        {({ cartLength }) => (
-          <header>
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-              <div className="container-fluid container">
-                <Link to="/" className="d-flex align-items-center text-decoration-none">
-                  <img src={ logo } width="40px" alt="site logo" />
-                  <h4 className="m-0 ms-2 me-5 text-white">Store</h4>
-                </Link>
-                <button
-                  className="navbar-toggler"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#navbarSupportedContent"
-                  aria-controls="navbarSupportedContent"
-                  aria-expanded="false"
-                  aria-label="Toggle navigation"
-                >
-                  <span className="navbar-toggler-icon" />
-                </button>
-                {this.renderLinks(cartLength)}
-              </div>
-            </nav>
-          </header>
-        )}
-      </Context.Consumer>
+      // Título principal
+      <header className="header-container">
+        <div className="title-container">
+          <h2>Project Frontend Online Shopp</h2>
+          <p data-testid="home-initial-message">
+            Digite algum termo de pesquisa ou escolha uma categoria.
+          </p>
+        </div>
+        {/* Carrinho */}
+        <Link
+          to="/cart"
+          data-testid="shopping-cart-size"
+        >
+          <div className="div-img-cart">
+            <img
+              className="img-cart"
+              src="shopping_cart_black_24dp.svg"
+              alt=""
+            />
+            <span
+              style={ { color: 'black' } }
+              className="show-qtd"
+            >
+              {' '}
+              [
+              {' '}
+              { totalItems }
+              {' '}
+              ]
+            </span>
+          </div>
+        </Link>
+
+      </header>
     );
   }
 }
+
+Header.propTypes = {
+  cartItems: PropTypes.arrayOf,
+}.isRequired;
 
 export default Header;
