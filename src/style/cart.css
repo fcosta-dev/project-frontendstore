@@ -1,0 +1,27 @@
+.container-border {
+  padding-bottom: 1px;
+  padding-top: 1px;
+}
+
+.product-card {
+  height: 240px;
+}
+
+.product-border {
+  border-bottom: 1px solid #c1c6cf;
+  border-top: 1px solid #c1c6cf;
+  margin-bottom: -1px;
+  margin-top: -1px;
+}
+
+.negative-margin {
+  margin-left: -14px;
+  margin-right: -14px;
+}
+
+@media screen and ( max-width : 535px ) {
+
+  .product-card {
+    height: 195px;
+  }
+}
